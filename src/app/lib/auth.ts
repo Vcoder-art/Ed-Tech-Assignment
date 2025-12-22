@@ -26,3 +26,18 @@ export async function clearAuthCookie() {
   const cookieStore = await cookies(); // Await the cookies() function
   cookieStore.delete("token");
 }
+
+
+export async function getAuthUser() {
+  const token =  (await cookies()).get("token")?.value;
+  if (!token) return null;
+
+  try {
+    return jwt.verify(token, JWT_SECRET) as {
+      userId: string;
+      role: string;
+    };
+  } catch {
+    return null;
+  }
+}
