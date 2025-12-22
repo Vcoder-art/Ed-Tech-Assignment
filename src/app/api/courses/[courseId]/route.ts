@@ -5,13 +5,13 @@ import { updateCourseSchema } from "../../../lib/validators/course";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { courseId: string } }
 ) {
   const user = await getAuthUser();
   if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
   const course = await prisma.course.findUnique({
-    where: { id: params.id },
+    where: { id: params.courseId },
   });
 
   if (!course || course.instructorId !== user.userId) {
@@ -22,7 +22,7 @@ export async function PUT(
   const data = updateCourseSchema.parse(body);
 
   const updated = await prisma.course.update({
-    where: { id: params.id },
+    where: { id: params.courseId },
     data,
   });
 
@@ -31,13 +31,13 @@ export async function PUT(
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { courseId: string } }
 ) {
   const user = await getAuthUser();
   if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
   const course = await prisma.course.findUnique({
-    where: { id: params.id },
+    where: { id: params.courseId },
   });
 
   if (!course || course.instructorId !== user.userId) {
@@ -45,7 +45,7 @@ export async function DELETE(
   }
 
   await prisma.course.delete({
-    where: { id: params.id },
+    where: { id: params.courseId },
   });
 
   return NextResponse.json({ message: "Course deleted" });
