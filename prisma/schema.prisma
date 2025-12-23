@@ -5,6 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
   provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
