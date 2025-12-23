@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "2.0.88",
-    "@prisma/cli  ent": "6.19.1",
+    "@prisma/client": "6.19.1",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-slot": "^1.2.4",
     "bcrypt": "6.0.0",
