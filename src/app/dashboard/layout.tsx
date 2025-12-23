@@ -8,15 +8,18 @@ export default async function DashboardLayout({
   children: ReactNode;
 }) {
   // requireAuth should handle the redirect internally if the token is missing
-  const user = await requireAuth(); 
+  const user = await requireAuth();
 
-  const navStyles = "block p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700 font-medium";
+  const navStyles =
+    "block p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700 font-medium";
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       {/* Fixed: Added 'flex flex-col' to ensure spacing works and fixed positioning if needed */}
       <aside className="w-64 bg-white border-r px-6 py-8 flex flex-col">
-        <h2 className="text-xl font-bold mb-8 text-blue-600">EdTech Dashboard</h2>
+        <h2 className="text-xl font-bold mb-8 text-blue-600">
+          EdTech Dashboard
+        </h2>
 
         <nav className="space-y-2 flex-1">
           <Link href="/dashboard" className={navStyles}>
@@ -28,11 +31,8 @@ export default async function DashboardLayout({
               <Link href="/dashboard/courses" className={navStyles}>
                 My Courses
               </Link>
-              <Link href="/dashboard/assignments" className={navStyles}>
-                Assignments
-              </Link>
-              <Link href="/dashboard/submissions" className={navStyles}>
-                Submissions
+              <Link href="/dashboard/courses/create" className={navStyles}>
+                Create Course
               </Link>
             </>
           )}

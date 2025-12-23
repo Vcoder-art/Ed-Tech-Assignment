@@ -7,6 +7,7 @@ export async function POST(
   req: Request,
   { params }: { params: { id: string } }
 ) {
+  params = await params;
   const user = await getAuthUser();
   if (!user || user.role !== "STUDENT") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });

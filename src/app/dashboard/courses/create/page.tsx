@@ -1,15 +1,18 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React ,{ useState } from "react";
+import React, { useState } from "react"; // Optional: for a back button feel
+import Link from "next/link";
 
 export default function CreateCoursePage() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    setLoading(true);
 
     const res = await fetch("/api/courses", {
       method: "POST",
@@ -19,6 +22,7 @@ export default function CreateCoursePage() {
 
     if (!res.ok) {
       alert("Failed to create course");
+      setLoading(false);
       return;
     }
 
@@ -26,26 +30,68 @@ export default function CreateCoursePage() {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4 max-w-md">
-      <h1 className="text-xl font-bold">Create Course</h1>
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+      {/* Back to Dashboard Link */}
+      <div className="w-full max-w-2xl mb-6">
+        <Link
+          href="/dashboard"
+          className="text-sm text-gray-500 hover:text-black flex items-center gap-1 transition-colors"
+        >
+          ← Back to Dashboard
+        </Link>
+      </div>
 
-      <input
-        className="border p-2 w-full"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+      <div className="w-full max-w-2xl bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-extrabold text-gray-900">
+            Create New Course
+          </h1>
+          <p className="text-gray-500 mt-2">
+            Fill in the details below to set up your new learning path.
+          </p>
+        </div>
 
-      <textarea
-        className="border p-2 w-full"
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+        <form onSubmit={submit} className="space-y-6">
+          {/* Course Title */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 ml-1">
+              Course Title
+            </label>
+            <input
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all placeholder:text-gray-400"
+              placeholder="e.g. Advanced Web Development"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
 
-      <button className="bg-black text-white px-4 py-2">
-        Create
-      </button>
-    </form>
+          {/* Course Description */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 ml-1">
+              Description
+            </label>
+            <textarea
+              required
+              rows={5}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all placeholder:text-gray-400 resize-none"
+              placeholder="What will students learn in this course?"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+
+          {/* Submit Button */}
+          <div className="pt-2">
+            <button
+              disabled={loading}
+              className="w-full bg-black text-white font-bold py-4 rounded-lg hover:bg-gray-800 transform active:scale-[0.98] transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {loading ? "Creating..." : "Create Course"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
