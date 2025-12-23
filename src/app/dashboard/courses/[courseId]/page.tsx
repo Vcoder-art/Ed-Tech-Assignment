@@ -16,9 +16,10 @@ export default async function CourseAssignmentsPage({
     role: "STUDENT" | "INSTRUCTOR";
   };
 
-  const res = await fetch(`/api/courses/${params.courseId}/assignments`, {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_APP_URL}/api/courses/${params.courseId}/assignments`,
+    { cache: "no-store" }
+  );
 
   const assignments = await res.json();
 
