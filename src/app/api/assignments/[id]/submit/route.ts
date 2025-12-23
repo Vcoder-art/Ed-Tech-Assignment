@@ -5,9 +5,9 @@ import { evaluateAssignment } from "../../../../lib/aiEvaluator";
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  params = await params;
+  const resolveParams = await params;
   const user = await getAuthUser();
   if (!user || user.role !== "STUDENT") {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
@@ -25,7 +25,7 @@ export async function POST(
     where: {
       studentId_assignmentId: {
         studentId: user.userId,
-        assignmentId: params.id,
+        assignmentId: resolveParams.id,
       },
     },
   });
@@ -38,7 +38,7 @@ export async function POST(
     data: {
       content: body.content,
       studentId: user.userId,
-      assignmentId: params.id,
+      assignmentId: resolveParams.id,
     },
   });
 

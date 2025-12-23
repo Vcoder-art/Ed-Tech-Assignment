@@ -5,10 +5,10 @@ import jwt from "jsonwebtoken";
 
 export async function POST(
   _: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    params = await params;
+    const resolvePromise = await params;
     const cookie = await cookies();
     const token = cookie.get("token")?.value;
 
@@ -31,7 +31,7 @@ export async function POST(
 
     // Check course exists
     const course = await prisma.course.findUnique({
-      where: { id: params.courseId },
+      where: { id: resolvePromise.courseId },
     });
 
     if (!course) {
@@ -53,13 +53,13 @@ export async function POST(
     const enrollment = await prisma.enrollment.create({
       data: {
         userId: payload.userId,
-        courseId: params.courseId,
+        courseId: resolvePromise.courseId,
       },
     });
 
     return NextResponse.redirect(
       new URL(
-        `/dashboard/courses/${params.courseId}`,
+        `/dashboard/courses/${resolvePromise.courseId}`,
         process.env.NEXT_PUBLIC_APP_URL
       )
     );

@@ -5,13 +5,15 @@ import { updateCourseSchema } from "../../../lib/validators/course";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
+  const resolveParams = await params;
   const user = await getAuthUser();
-  if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  if (!user)
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
   const course = await prisma.course.findUnique({
-    where: { id: params.courseId },
+    where: { id: resolveParams.courseId },
   });
 
   if (!course || course.instructorId !== user.userId) {
@@ -22,7 +24,7 @@ export async function PUT(
   const data = updateCourseSchema.parse(body);
 
   const updated = await prisma.course.update({
-    where: { id: params.courseId },
+    where: { id: resolveParams.courseId },
     data,
   });
 
@@ -31,13 +33,15 @@ export async function PUT(
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
+  const resolveParams = await params;
   const user = await getAuthUser();
-  if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  if (!user)
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
   const course = await prisma.course.findUnique({
-    where: { id: params.courseId },
+    where: { id: resolveParams.courseId },
   });
 
   if (!course || course.instructorId !== user.userId) {
@@ -45,7 +49,7 @@ export async function DELETE(
   }
 
   await prisma.course.delete({
-    where: { id: params.courseId },
+    where: { id: resolveParams.courseId },
   });
 
   return NextResponse.json({ message: "Course deleted" });

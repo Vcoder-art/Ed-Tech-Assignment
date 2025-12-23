@@ -6,12 +6,11 @@ import { log } from "console";
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
-  params = await params;
-  console.log(params)
+  const resolvePromise = await params;
   const user = await getAuthUser();
-  
+
   console.log(user);
   try {
     if (!user || user.role !== "INSTRUCTOR") {
@@ -19,7 +18,7 @@ export async function POST(
     }
 
     const course = await prisma.course.findUnique({
-      where: { id: params.courseId },
+      where: { id: resolvePromise.courseId },
     });
 
     if (!course || course.instructorId !== user.userId) {
@@ -35,7 +34,7 @@ export async function POST(
     const assignment = await prisma.assignment.create({
       data: {
         ...data,
-        courseId: params.courseId,
+        courseId: resolvePromise.courseId,
         status: "PUBLISHED",
       },
     });
@@ -49,11 +48,12 @@ export async function POST(
 
 export async function GET(
   _: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
+  const resolveParams = await params;
   const assignments = await prisma.assignment.findMany({
     where: {
-      courseId: params.courseId,
+      courseId: resolveParams.courseId,
       status: "PUBLISHED",
     },
     orderBy: { createdAt: "desc" },

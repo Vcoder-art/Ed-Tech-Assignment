@@ -5,9 +5,9 @@ import jwt from "jsonwebtoken";
 
 export async function POST(
   _: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
-  params = await params;
+  const resolvePromise = await params;
   const cookie = await cookies();
   const token = cookie.get("token")?.value;
 
@@ -25,7 +25,7 @@ export async function POST(
   }
 
   const course = await prisma.course.findUnique({
-    where: { id: params.courseId },
+    where: { id: resolvePromise.courseId },
   });
 
   if (!course || course.instructorId !== payload.userId) {
@@ -33,7 +33,7 @@ export async function POST(
   }
 
   const updated = await prisma.course.update({
-    where: { id: params.courseId },
+    where: { id: resolvePromise.courseId },
     data: { isPublished: !course.isPublished },
   });
 
