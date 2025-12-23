@@ -2,26 +2,32 @@ import { requireAuth } from "../../../lib/auth-guards";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import Link from "next/link";
+import { prisma } from "@/app/lib/db";
 
 export default async function CourseAssignmentsPage({
   params,
 }: {
   params: { courseId: string };
 }) {
-  params = await params;
   requireAuth();
-  const cookie = await cookies();
-  const token = cookie.get("token")?.value ?? "";
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value ?? "";
+
   const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+    userId: string;
     role: "STUDENT" | "INSTRUCTOR";
   };
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_APP_URL}/api/courses/${params.courseId}/assignments`,
-    { cache: "no-store" }
-  );
-
-  const assignments = await res.json();
+  // ✅ DIRECT DB QUERY (NO FETCH)
+  const assignments = await prisma.assignment.findMany({
+    where: {
+      courseId: params.courseId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   return (
     <div className="space-y-4">
@@ -29,12 +35,12 @@ export default async function CourseAssignmentsPage({
 
       {assignments.length === 0 && <p>No assignments</p>}
 
-      {assignments.map((a: any) => (
+      {assignments.map((a) => (
         <div key={a.id} className="border p-3 rounded space-y-2">
           <h3 className="font-semibold">{a.title}</h3>
           <p className="text-sm text-gray-500">{a.description}</p>
 
-          {/* STUDENT → SUBMIT */}
+          {/* STUDENT */}
           {payload.role === "STUDENT" && (
             <Link
               href={`/dashboard/assignments/${a.id}/submit`}
@@ -44,7 +50,7 @@ export default async function CourseAssignmentsPage({
             </Link>
           )}
 
-          {/* INSTRUCTOR → VIEW SUBMISSIONS */}
+          {/* INSTRUCTOR */}
           {payload.role === "INSTRUCTOR" && (
             <Link
               href={`/dashboard/assignments/${a.id}/submissions`}
@@ -56,7 +62,7 @@ export default async function CourseAssignmentsPage({
         </div>
       ))}
 
-      {/* ONLY INSTRUCTOR CAN CREATE */}
+      {/* INSTRUCTOR CREATE */}
       {payload.role === "INSTRUCTOR" && (
         <Link
           href={`/dashboard/courses/${params.courseId}/create-assignment`}
