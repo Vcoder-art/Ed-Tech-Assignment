@@ -15,10 +15,9 @@ export default async function CourseAssignmentsPage({
     role: "STUDENT" | "INSTRUCTOR";
   };
 
-  const res = await fetch(
-    `http://localhost:3000/api/courses/${params.courseId}/assignments`,
-    { cache: "no-store" }
-  );
+  const res = await fetch(`/api/courses/${params.courseId}/assignments`, {
+    cache: "no-store",
+  });
 
   const assignments = await res.json();
 
