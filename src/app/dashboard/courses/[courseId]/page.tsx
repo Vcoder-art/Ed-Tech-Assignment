@@ -8,6 +8,7 @@ export default async function CourseAssignmentsPage({
 }: {
   params: { courseId: string };
 }) {
+  params = await params;
   requireAuth();
   const cookie = await cookies();
   const token = cookie.get("token")?.value ?? "";
