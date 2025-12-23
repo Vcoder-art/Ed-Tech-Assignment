@@ -45,7 +45,7 @@ export default async function AssignmentSubmissionsPage({
         <p className="text-gray-500">No submissions yet.</p>
       )}
 
-      {assignment.submissions.map((s) => (
+      {assignment.submissions.map((s: any) => (
         <div key={s.id} className="border p-4 rounded space-y-2">
           <p className="font-semibold">Student: {s.student.name}</p>
           <p className="text-sm whitespace-pre-wrap">{s.content}</p>

@@ -73,10 +73,10 @@ export default async function CoursesPage({
       )}
 
       {/* COURSES LIST */}
-      {courses.map((course) => {
+      {courses.map((course: any) => {
         const isEnrolled =
           payload.role === "STUDENT"
-            ? course.enrollments.some((e) => e.userId === payload.userId)
+            ? course.enrollments.some((e: any) => e.userId === payload.userId)
             : false;
 
         return (
